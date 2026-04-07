@@ -34,40 +34,40 @@ export class Principal {
       const img = new Image();
       img.onload = async () => {
 
-        setTimeout(async () => {
-          try {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
-            const margin = 120;
-            const scale = 6;
 
-            canvas.width = (img.width * scale) + (margin * 2);
-            canvas.height = (img.height * scale) + (margin * 2);
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.imageSmoothingEnabled = false;
-            ctx.drawImage(img, margin, margin, img.width * scale, img.height * scale);
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-            for (let i = 0; i < data.length; i += 4) {
-              const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        try {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
+          const margin = 120;
+          const scale = 6;
 
-            }
-            ctx.putImageData(imageData, 0, 0);
-            const bitmap = await this.lector.decodeFromCanvas(canvas);
+          canvas.width = (img.width * scale) + (margin * 2);
+          canvas.height = (img.height * scale) + (margin * 2);
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(img, margin, margin, img.width * scale, img.height * scale);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imageData.data;
+          for (let i = 0; i < data.length; i += 4) {
+            const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
 
-
-            this.ngZone.run(() => {
-              this.parseDni(bitmap.getText());
-              this.cargando.set(false);
-            });
-          } catch (error) {
-            this.ngZone.run(() => {
-              this.errorMsg.set('No se encontró código QR legible.');
-              this.cargando.set(false);
-            });
           }
-        }, 100);
+          ctx.putImageData(imageData, 0, 0);
+          const bitmap = await this.lector.decodeFromCanvas(canvas);
+
+
+          this.ngZone.run(() => {
+            this.parseDni(bitmap.getText());
+            this.cargando.set(false);
+          });
+        } catch (error) {
+          this.ngZone.run(() => {
+            this.errorMsg.set('No se encontró código QR legible.');
+            this.cargando.set(false);
+          });
+        }
+
       };
 
       this.ngZone.run(() => {
@@ -83,12 +83,19 @@ export class Principal {
 
   parseDni(text: string) {
     const dniMatch = text.match(/\d{8}[A-Z]/);
-    const fechaMatch = text.match(/\d{2}-\d{2}-\d{4}/);
-    const nombreMatch = text.match(/[A-ZÁÉÍÓÚÑ]{3,}@/);
+    const fechaMatch = text.match(/\d{2}-\d{2}-\d{4}D/);
+    const nombreMatch = text.match(/[A-ZÁÉÍÓÚÑ]{3,}F/);
+    const lugarmatch = text.match(/[A-ZÁÉÍÓÚÑ]+d/);
+    const domiciliomatch = text.match(/C\.[A-ZÁÉÍÓÚÑ\s]+/);
+    const nacionalidadmatch = text.match(/[A-ZÁÉÍÓÚÑ]+f/);
+
     this.datosDni.set({
       numero: dniMatch ? dniMatch[0] : 'No encontrado',
-      fechaNacimiento: fechaMatch ? fechaMatch[0] : 'No encontrada',
-      nombre: nombreMatch ? nombreMatch[0].replace('@', '') : 'No encontrado',
+      fechaNacimiento: fechaMatch ? fechaMatch[0].replace('D', '') : 'No encontrada',
+      nombre: nombreMatch ? nombreMatch[0].replace('F', '') : 'No encontrado',
+      lugarNacimiento: lugarmatch ? lugarmatch[0].replace('d', '') : 'No detectado',
+      domicilio: domiciliomatch ? domiciliomatch[0] : 'No detectado',
+      nacionalidad: nacionalidadmatch ? nacionalidadmatch[0].replace('f', '') : 'No detectada',
       raw: text
     });
   }

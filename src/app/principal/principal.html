@@ -68,8 +68,18 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Estado de Validación</label>
-                        <span class="badge success">✅ Verificado</span>
+                        <label>Lugar de Nacimiento</label>
+                        <input type="text" [value]="datosDni().lugarNacimiento" readonly>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Domicilio</label>
+                        <input type="text" [value]="datosDni().domicilio" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nacionalidad</label>
+                        <input type="text" [value]="datosDni().nacionalidad" readonly>
                     </div>
                 </div>
             </div>
