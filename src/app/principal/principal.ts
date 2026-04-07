@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, signal } from '@angular/core';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { CommonModule } from '@angular/common';
 import { DecodeHintType, BarcodeFormat } from '@zxing/library';
@@ -10,9 +10,10 @@ import { DecodeHintType, BarcodeFormat } from '@zxing/library';
 })
 export class Principal {
 
-  datosDni: any = null;
-  cargando = false;
-  errorMsg = '';
+  datosDni = signal<any>(null);
+  cargando = signal<boolean>(false);
+  errorMsg = signal<string>('');
+  imagePreview = signal<string | null>(null);
   private lector: BrowserMultiFormatReader;
   constructor(private ngZone: NgZone) {
     const hints = new Map();
@@ -23,30 +24,17 @@ export class Principal {
     const file = event.target.files[0];
     if (!file) return;
 
-    this.cargando = true;
-    this.errorMsg = '';
-    this.datosDni = null;
+    this.cargando.set(true);
+    this.errorMsg.set('');
+    this.datosDni.set(null);
+    this.imagePreview.set(null);
 
     const reader = new FileReader();
-
-
-    reader.onerror = () => this.ngZone.run(() => {
-      this.errorMsg = 'Error al leer el archivo del dispositivo.';
-      this.cargando = false;
-    });
-
     reader.onload = (w: any) => {
       const img = new Image();
-
-
-      img.onerror = () => this.ngZone.run(() => {
-        this.errorMsg = 'El archivo seleccionado no es una imagen válida.';
-        this.cargando = false;
-      });
-
       img.onload = async () => {
 
-        this.ngZone.run(async () => {
+        setTimeout(async () => {
           try {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext("2d")!;
@@ -55,7 +43,6 @@ export class Principal {
 
             canvas.width = (img.width * scale) + (margin * 2);
             canvas.height = (img.height * scale) + (margin * 2);
-
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.imageSmoothingEnabled = false;
@@ -63,40 +50,47 @@ export class Principal {
 
             const bitmap = await this.lector.decodeFromCanvas(canvas);
 
-            if (bitmap) {
+
+            this.ngZone.run(() => {
               this.parseDni(bitmap.getText());
-            } else {
-              this.errorMsg = 'No se encontró ningún código QR legible.';
-            }
+              this.cargando.set(false);
+            });
           } catch (error) {
-            console.error('Error en escaneo:', error);
-            this.errorMsg = 'No se encuentra el QR. Prueba con una foto más nítida o con más luz.';
-          } finally {
-            this.cargando = false;
+            this.ngZone.run(() => {
+              this.errorMsg.set('No se encontró código QR legible.');
+              this.cargando.set(false);
+            });
           }
-        });
+        }, 100);
       };
-      img.src = w.target.result;
+
+      this.ngZone.run(() => {
+        this.imagePreview.set(w.target.result);
+        img.src = w.target.result;
+      });
     };
     reader.readAsDataURL(file);
   }
 
 
+
+
   parseDni(text: string) {
-    const fragmentos = text.split('|');
-    this.datosDni = {
-      numero: fragmentos[0] || 'Desconocido',
-      apellido1: fragmentos[1] || '',
-      apellido2: fragmentos[2] || '',
-      nombre: fragmentos[3] || '',
+    const dniMatch = text.match(/\d{8}[A-Z]/);
+    const fechaMatch = text.match(/\d{2}-\d{2}-\d{4}/);
+    const nombreMatch = text.match(/[A-ZÁÉÍÓÚÑ]{3,}\s+[A-ZÁÉÍÓÚÑ]{3,}/);
+    this.datosDni.set({
+      numero: dniMatch ? dniMatch[0] : 'No encontrado',
+      fechaNacimiento: fechaMatch ? fechaMatch[0] : 'No encontrada',
+      nombre: nombreMatch ? nombreMatch[0] : 'No encontrado',
       raw: text
-    };
-    return this.datosDni;
+    });
   }
 
   limpiar() {
-    this.datosDni = null;
-    this.errorMsg = '';
+    this.datosDni.set(null);
+    this.errorMsg.set('');
+    this.imagePreview.set(null);
   }
 
 

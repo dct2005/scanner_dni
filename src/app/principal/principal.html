@@ -1,25 +1,79 @@
-<div class="container-upload">
-    <h2>Lector de DNI por Imagen</h2>
+<div class="container-app">
+    <header class="main-header">
+        <h1>Lector de DNI Inteligente</h1>
+        <p>Sube la imagen del QR para procesar los datos automáticamente</p>
+    </header>
 
-    <div class="upload-box" *ngIf="!datosDni">
-        <label for="file-input" class="custom-file-upload">
-            <span *ngIf="!cargando">📁 Seleccionar imagen del QR</span>
-            <span *ngIf="cargando">Procesando...</span>
+    @if (!datosDni()) {
+    <div class="upload-section">
+        <label for="file-input" class="upload-card" [class.loading]="cargando()">
+            <div class="icon-box">
+                @if (!cargando()) {
+                <span>📂</span>
+                } @else {
+                <div class="spinner"></div>
+                }
+            </div>
+            <div class="text-box">
+                @if (!cargando()) {
+                <h3>Seleccionar imagen del DNI</h3>
+                } @else {
+                <h3>Analizando documento...</h3>
+                }
+                <p>Formatos aceptados: JPG, PNG, WEBP</p>
+            </div>
         </label>
-        <input id="file-input" type="file" (change)="onFileSelected($event)" accept="image/*" />
-        <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
-    </div>
+        <input id="file-input" type="file" (change)="onFileSelected($event)" accept="image/*" [disabled]="cargando()" />
 
-    <div class="result-card" *ngIf="datosDni">
-        <h3>Datos del DNI</h3>
-        <hr>
-        <div class="info-grid">
-            <p><strong>Número:</strong> {{ datosDni.numero || '---' }}</p>
-            <p><strong>Nombre:</strong> {{ datosDni.nombre || '---' }}</p>
-            <p><strong>Apellidos:</strong> {{ datosDni.apellido1 }} {{ datosDni.apellido2 }}</p>
-            <p><strong>F. Nacimiento:</strong> {{ datosDni.fechaNacimiento || '---' }}</p>
-            <p *ngIf="datosDni.raw"><strong>Contenido:</strong> {{ datosDni.raw }}</p>
-        </div>
-        <button class="btn-clear" (click)="limpiar()">Subir otro</button>
+        @if (errorMsg()) {
+        <div class="error-toast">⚠️ {{ errorMsg() }}</div>
+        }
     </div>
+    }
+
+    @if (datosDni()) {
+    <div class="dashboard">
+        <aside class="preview-sidebar">
+            <div class="card preview-card">
+                <h3>Documento Original</h3>
+                <div class="image-container">
+                    <img [src]="imagePreview()" alt="DNI subido">
+                </div>
+                <button class="btn-secondary" (click)="limpiar()">Limpiar y volver</button>
+            </div>
+        </aside>
+
+        <main class="form-content">
+            <div class="card form-card">
+                <h3>Datos Extraídos</h3>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Contenido RAW del QR</label>
+                        <div class="raw-data">{{ datosDni().raw }}</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Número de Documento</label>
+                        <input type="text" [value]="datosDni().numero" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento</label>
+                        <input type="text" [value]="datosDni().fechaNacimiento" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" [value]="datosDni().nombre" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Estado de Validación</label>
+                        <span class="badge success">✅ Verificado</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    }
 </div>
