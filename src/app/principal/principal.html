@@ -32,6 +32,8 @@
     }
 
     @if (datosDni()) {
+
+    @if (datosDni().lugarNacimiento != 'No encontrado') {
     <div class="dashboard">
         <aside class="preview-sidebar">
             <div class="card preview-card">
@@ -85,5 +87,76 @@
             </div>
         </main>
     </div>
+    }
+    @if(datosDni().lugarNacimiento == 'No encontrado' && datosDni().fechaNacimiento != 'No encontrado'){
+    <div class="dashboard">
+        <aside class="preview-sidebar">
+            <div class="card preview-card">
+                <h3>Documento Original</h3>
+                <div class="image-container">
+                    <img [src]="imagePreview()" alt="DNI subido">
+                </div>
+                <button class="btn-secondary" (click)="limpiar()">Limpiar y volver</button>
+            </div>
+        </aside>
+
+        <main class="form-content">
+            <div class="card form-card">
+                <h3>Datos Extraídos</h3>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Contenido RAW del QR</label>
+                        <div class="raw-data">{{ datosDni().raw }}</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Número de Documento</label>
+                        <input type="text" [value]="datosDni().numero" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento</label>
+                        <input type="text" [value]="datosDni().fechaNacimiento" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" [value]="datosDni().nombre" readonly>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    }
+    @if(datosDni().fechaNacimiento == 'No encontrado'){
+    <div class="dashboard">
+        <aside class="preview-sidebar">
+            <div class="card preview-card">
+                <h3>Documento Original</h3>
+                <div class="image-container">
+                    <img [src]="imagePreview()" alt="DNI subido">
+                </div>
+                <button class="btn-secondary" (click)="limpiar()">Limpiar y volver</button>
+            </div>
+        </aside>
+
+        <main class="form-content">
+            <div class="card form-card">
+                <h3>Datos Extraídos</h3>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Contenido RAW del QR</label>
+                        <div class="raw-data">{{ datosDni().raw }}</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Número de Documento</label>
+                        <input type="text" [value]="datosDni().numero" readonly>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    }
     }
 </div>

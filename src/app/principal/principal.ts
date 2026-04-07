@@ -91,11 +91,11 @@ export class Principal {
 
     this.datosDni.set({
       numero: dniMatch ? dniMatch[0] : 'No encontrado',
-      fechaNacimiento: fechaMatch ? fechaMatch[0].replace('D', '') : 'No encontrada',
+      fechaNacimiento: fechaMatch ? fechaMatch[0].replace('D', '') : 'No encontrado',
       nombre: nombreMatch ? nombreMatch[0].replace('F', '') : 'No encontrado',
-      lugarNacimiento: lugarmatch ? lugarmatch[0].replace('d', '') : 'No detectado',
-      domicilio: domiciliomatch ? domiciliomatch[0] : 'No detectado',
-      nacionalidad: nacionalidadmatch ? nacionalidadmatch[0].replace('f', '') : 'No detectada',
+      lugarNacimiento: lugarmatch ? lugarmatch[0].replace('d', '') : 'No encontrado',
+      domicilio: domiciliomatch ? domiciliomatch[0] : 'No encontrado',
+      nacionalidad: nacionalidadmatch ? nacionalidadmatch[0].replace('f', '') : 'No encontrado',
       raw: text
     });
   }
