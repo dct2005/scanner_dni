@@ -1,11 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ZXingScannerModule } from '@zxing/ngx-scanner';
+
 import { Principal } from './principal/principal';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ZXingScannerModule, Principal],
+  imports: [RouterOutlet, Principal],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
