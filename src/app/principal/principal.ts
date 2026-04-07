@@ -37,9 +37,9 @@ export class Principal {
         setTimeout(async () => {
           try {
             const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext("2d")!;
-            const margin = 40;
-            const scale = 4;
+            const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
+            const margin = 120;
+            const scale = 6;
 
             canvas.width = (img.width * scale) + (margin * 2);
             canvas.height = (img.height * scale) + (margin * 2);
@@ -47,7 +47,13 @@ export class Principal {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.imageSmoothingEnabled = false;
             ctx.drawImage(img, margin, margin, img.width * scale, img.height * scale);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+              const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
 
+            }
+            ctx.putImageData(imageData, 0, 0);
             const bitmap = await this.lector.decodeFromCanvas(canvas);
 
 
@@ -78,11 +84,11 @@ export class Principal {
   parseDni(text: string) {
     const dniMatch = text.match(/\d{8}[A-Z]/);
     const fechaMatch = text.match(/\d{2}-\d{2}-\d{4}/);
-    const nombreMatch = text.match(/[A-ZÁÉÍÓÚÑ]{3,}\s+[A-ZÁÉÍÓÚÑ]{3,}/);
+    const nombreMatch = text.match(/[A-ZÁÉÍÓÚÑ]{3,}@/);
     this.datosDni.set({
       numero: dniMatch ? dniMatch[0] : 'No encontrado',
       fechaNacimiento: fechaMatch ? fechaMatch[0] : 'No encontrada',
-      nombre: nombreMatch ? nombreMatch[0] : 'No encontrado',
+      nombre: nombreMatch ? nombreMatch[0].replace('@', '') : 'No encontrado',
       raw: text
     });
   }
