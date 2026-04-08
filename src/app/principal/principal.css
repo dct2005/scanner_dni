@@ -38,7 +38,7 @@
     font-size: 1.1rem;
 }
 
-/* Upload Section */
+
 .upload-section {
     max-width: 500px;
     margin: 0 auto;
@@ -101,7 +101,6 @@ input[type="file"] { display: none; }
     text-align: center;
 }
 
-/* Dashboard Layout */
 .dashboard {
     display: grid;
     grid-template-columns: 320px 1fr;
@@ -127,7 +126,6 @@ input[type="file"] { display: none; }
     color: var(--text-light);
 }
 
-/* Sidebar Preview */
 .image-container {
     width: 100%;
     aspect-ratio: 4/3;
@@ -157,7 +155,7 @@ input[type="file"] { display: none; }
 
 .btn-secondary:hover { background: #e2e5e9; }
 
-/* Form Content */
+
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
