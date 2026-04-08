@@ -88,7 +88,8 @@ export class Principal {
     const lugarmatch = text.match(/[A-ZÁÉÍÓÚÑ]+d/);
     const domiciliomatch = text.match(/C\.[A-ZÁÉÍÓÚÑ\s]+/);
     const nacionalidadmatch = text.match(/[A-ZÁÉÍÓÚÑ]+f/);
-
+    const apellidosMatch = text.match(/[A-ZÁÉÍÓÚÑ]+\s[A-ZÁÉÍÓÚÑ]+H/);
+    const validezMatch = text.match(/\d{2}-\d{2}-\d{4}P/);
     this.datosDni.set({
       numero: dniMatch ? dniMatch[0] : 'No encontrado',
       fechaNacimiento: fechaMatch ? fechaMatch[0].replace('D', '') : 'No encontrado',
@@ -96,6 +97,8 @@ export class Principal {
       lugarNacimiento: lugarmatch ? lugarmatch[0].replace('d', '') : 'No encontrado',
       domicilio: domiciliomatch ? domiciliomatch[0] : 'No encontrado',
       nacionalidad: nacionalidadmatch ? nacionalidadmatch[0].replace('f', '') : 'No encontrado',
+      apellidos: apellidosMatch ? apellidosMatch[0].replace('H', '') : 'No encontrado',
+      fechaValidez: validezMatch ? validezMatch[0].replace('P', '') : 'No encontrado',
       raw: text
     });
   }
